@@ -4,9 +4,10 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
+
+import ListItem from '../components/ListItem/ListItem'
 
 export default class HomeScreen extends React.Component {
   state = {
@@ -28,10 +29,22 @@ export default class HomeScreen extends React.Component {
       })
     ): null
   }
+  placeDeletedHandler = index => {
+    this.setState(prevState => {
+      return {
+        places: prevState.places.filter((place, i) => {
+          return i !== index
+        })
+      }
+    })
+  }
 
   render() {
     const placesOutput = this.state.places.map((place, i) => (
-      <Text key={i}>{place}</Text>      
+      <ListItem 
+        key={i} 
+        placeName={place} 
+        onItemPressed={() => {this.placeDeletedHandler(i)}}/>  
     ))
     return (
       <View style={styles.container}>
@@ -47,7 +60,7 @@ export default class HomeScreen extends React.Component {
             style={styles.placeButton}
             title="Add"/>
         </View>
-        <View>
+        <View style={styles.listContainer}>
           {placesOutput}
         </View>
       </View>
@@ -73,6 +86,9 @@ const styles = StyleSheet.create({
   },
   placeButton:{
     width: "30%",
+  },
+  listContainer:{
+    width: "100%",
   }
 
 });
