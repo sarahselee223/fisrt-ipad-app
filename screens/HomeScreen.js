@@ -2,9 +2,9 @@ import React from 'react';
 import {
   Button,
   StyleSheet,
-  Text,
   TextInput,
   View,
+  FlatList,
 } from 'react-native';
 
 import ListItem from '../components/ListItem/ListItem'
@@ -24,28 +24,23 @@ export default class HomeScreen extends React.Component {
     this.state.placeName.trim()!=='' ? (
       this.setState(prevState => {
         return {
-          places: prevState.places.concat(prevState.placeName)
+          places: prevState.places.concat({key: Math.random(), value: prevState.placeName})
         }
       })
     ): null
   }
-  placeDeletedHandler = index => {
+  placeDeletedHandler = key => {
     this.setState(prevState => {
       return {
-        places: prevState.places.filter((place, i) => {
-          return i !== index
+        places: prevState.places.filter(place => {
+          return place.key !== key
         })
       }
     })
   }
 
   render() {
-    const placesOutput = this.state.places.map((place, i) => (
-      <ListItem 
-        key={i} 
-        placeName={place} 
-        onItemPressed={() => {this.placeDeletedHandler(i)}}/>  
-    ))
+  
     return (
       <View style={styles.container}>
         <View style={styles.inputContainer}>
@@ -60,9 +55,14 @@ export default class HomeScreen extends React.Component {
             style={styles.placeButton}
             title="Add"/>
         </View>
-        <View style={styles.listContainer}>
-          {placesOutput}
-        </View>
+        <FlatList 
+          style={styles.listContainer}
+          data={this.state.places}
+          renderItem={(info) => (
+            <ListItem 
+              placeName={info.item.value} 
+              onItemPressed={() => {this.placeDeletedHandler(info.item.key)}}/>  
+          )}/>
       </View>
     )
   }
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   },
   listContainer:{
     width: "100%",
+    marginBottom: "5%"
   }
 
 });
